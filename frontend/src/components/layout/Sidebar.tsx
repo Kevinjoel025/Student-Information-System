@@ -15,7 +15,7 @@ export const Sidebar = () => {
     { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/admin/students', icon: Users, label: 'Students' },
     { to: '/admin/courses', icon: BookOpen, label: 'Courses' },
-    { to: '/admin/marks', icon: FileSpreadsheet, label: 'Marks' },
+    { to: '/admin/marks', icon: FileSpreadsheet, label: 'Results' },
     { to: '/admin/attendance', icon: CalendarCheck, label: 'Attendance' },
     { to: '/admin/reports', icon: FileOutput, label: 'Reports' },
   ];
@@ -23,7 +23,7 @@ export const Sidebar = () => {
   const studentLinks = [
     { to: '/student/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/student/courses', icon: BookOpen, label: 'My Courses' },
-    { to: '/student/marks', icon: FileSpreadsheet, label: 'My Marks' },
+    { to: '/student/results', icon: FileSpreadsheet, label: 'Results' },
     { to: '/student/attendance', icon: CalendarCheck, label: 'Attendance' },
     { to: '/student/profile', icon: UserIcon, label: 'Profile' },
   ];

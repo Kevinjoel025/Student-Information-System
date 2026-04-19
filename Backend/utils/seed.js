@@ -5,6 +5,8 @@ const User = require('../models/User');
 const Course = require('../models/Course');
 const Marks = require('../models/Marks');
 const Attendance = require('../models/Attendance');
+const { generateBTechMark } = require('./realisticMarks');
+const { pickAttendanceBand, buildRowsForStudent } = require('../services/attendanceEnrollment');
 
 // ============================================================
 // ALL STUDENTS — REAL DATA FROM CSV
@@ -313,63 +315,28 @@ const allStudents = [
 // COURSE DATA
 // ============================================================
 const courses = [
-  { courseName: "Matrices and Calculus", courseCode: "22BS1MT101" },
-  { courseName: "Applied Physics", courseCode: "22BS1PH102" },
-  { courseName: "Programming for Problem Solving", courseCode: "22ES1CS101" },
-  { courseName: "English for Skill Enhancement", courseCode: "22HS1EN101" },
-  { courseName: "Introduction to Internet of Things", courseCode: "22ES1EI101" },
-  { courseName: "English Language and Communication Skills Laboratory", courseCode: "22HS2EN101" },
-  { courseName: "Applied Physics Laboratory", courseCode: "22BS2PH102" },
-  { courseName: "Programming for Problem Solving Laboratory", courseCode: "22ES2CS101" },
-  { courseName: "Engineering and IT Workshop", courseCode: "22ES2ME102" },
-  { courseName: "Elements of Computer Science and Engineering", courseCode: "22SD5CS101" },
-  { courseName: "Induction Programme", courseCode: "22MN6HS101" },
-  { courseName: "Ordinary Differential Equations and Vector Calculus", courseCode: "22BS1MT102" },
-  { courseName: "Statistical Methods for Data Analysis", courseCode: "22BS1MT103" },
-  { courseName: "Data Structures", courseCode: "22ES1CS102" },
-  { courseName: "Chemistry for Engineers", courseCode: "22BS1CH102" },
-  { courseName: "Basic Electrical and Electronics Engineering", courseCode: "22ES1EE101" },
-  { courseName: "Engineering Drawing", courseCode: "22ES3ME102" },
-  { courseName: "Engineering Chemistry Laboratory", courseCode: "22BS2CH101" },
-  { courseName: "Basic Electrical and Electronics Engineering Laboratory", courseCode: "22ES2EE101" },
-  { courseName: "Data Structures Laboratory", courseCode: "22ES2CS102" },
-  { courseName: "Environmental Science", courseCode: "22MN6HS102" },
+  { courseTitle: 'Matrices and Calculus', courseCode: '22BS1MT101', credits: 4 },
+  { courseTitle: 'Applied Physics', courseCode: '22BS1PH102', credits: 3 },
+  { courseTitle: 'Programming for Problem Solving', courseCode: '22ES1CS101', credits: 3 },
+  { courseTitle: 'English for Skill Enhancement', courseCode: '22HS1EN101', credits: 2 },
+  { courseTitle: 'Introduction to Internet of Things', courseCode: '22ES1EI101', credits: 2 },
+  { courseTitle: 'English Language and Communication Skills Laboratory', courseCode: '22HS2EN101', credits: 1 },
+  { courseTitle: 'Applied Physics Laboratory', courseCode: '22BS2PH102', credits: 1 },
+  { courseTitle: 'Programming for Problem Solving Laboratory', courseCode: '22ES2CS101', credits: 1 },
+  { courseTitle: 'Engineering and IT Workshop', courseCode: '22ES2ME102', credits: 2 },
+  { courseTitle: 'Elements of Computer Science and Engineering', courseCode: '22SD5CS101', credits: 1 },
+  { courseTitle: 'Induction Programme', courseCode: '22MN6HS101', credits: 0 },
+  { courseTitle: 'Ordinary Differential Equations and Vector Calculus', courseCode: '22BS1MT102', credits: 3 },
+  { courseTitle: 'Statistical Methods for Data Analysis', courseCode: '22BS1MT103', credits: 3 },
+  { courseTitle: 'Data Structures', courseCode: '22ES1CS102', credits: 3 },
+  { courseTitle: 'Chemistry for Engineers', courseCode: '22BS1CH102', credits: 3 },
+  { courseTitle: 'Basic Electrical and Electronics Engineering', courseCode: '22ES1EE101', credits: 3 },
+  { courseTitle: 'Engineering Drawing', courseCode: '22ES3ME102', credits: 2 },
+  { courseTitle: 'Engineering Chemistry Laboratory', courseCode: '22BS2CH101', credits: 1 },
+  { courseTitle: 'Basic Electrical and Electronics Engineering Laboratory', courseCode: '22ES2EE101', credits: 1 },
+  { courseTitle: 'Data Structures Laboratory', courseCode: '22ES2CS102', credits: 1 },
+  { courseTitle: 'Environmental Science', courseCode: '22MN6HS102', credits: 0 },
 ];
-
-// ============================================================
-// RANDOM DATA GENERATORS (for marks/attendance only)
-// ============================================================
-function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function randomPick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-// ============================================================
-// MARKS GENERATOR — realistic B.Tech bell curve
-// ============================================================
-function generateRealisticMark(isLab) {
-  const rand = Math.random();
-  if (isLab) {
-    if (rand < 0.02) return randomInt(35, 49);
-    else if (rand < 0.12) return randomInt(50, 69);
-    else if (rand < 0.50) return randomInt(70, 84);
-    else return randomInt(85, 98);
-  } else {
-    if (rand < 0.05) return randomInt(28, 49);
-    else if (rand < 0.30) return randomInt(50, 74);
-    else if (rand < 0.75) return randomInt(75, 89);
-    else return randomInt(90, 98);
-  }
-}
-
-function isLabCourse(course) {
-  return course.courseCode.charAt(4) === '2' ||
-         course.courseName.toLowerCase().includes('laboratory') ||
-         course.courseName.toLowerCase().includes('workshop');
-}
 
 // ============================================================
 // SEED FUNCTION
@@ -415,39 +382,27 @@ async function seed() {
     const createdCourses = await Course.insertMany(courses);
     console.log(`  ${createdCourses.length} courses inserted.`);
 
-    // 4. Marks
-    console.log('Generating realistic marks data...');
+    // 4. Marks (realistic B.Tech distribution)
+    console.log('Generating marks for all courses per student...');
     const marksToInsert = [];
     for (const student of createdStudents) {
-      const numCourses = randomInt(6, 8);
-      const shuffled = [...createdCourses].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, numCourses);
-      for (const course of selected) {
-        const m = generateRealisticMark(isLabCourse(course));
-        let grade;
-        if (m >= 90) grade = 'A';
-        else if (m >= 75) grade = 'B';
-        else if (m >= 50) grade = 'C';
-        else grade = 'Fail';
-        marksToInsert.push({ student: student._id, course: course._id, marks: m, grade });
+      for (const course of createdCourses) {
+        const m = generateBTechMark(course);
+        marksToInsert.push({ student: student._id, course: course._id, marks: m });
       }
     }
     await Marks.insertMany(marksToInsert);
     console.log(`  ${marksToInsert.length} marks entries created.`);
 
-    // 5. Attendance
-    console.log('Generating attendance data...');
-    const attendanceDocs = createdStudents.map(student => {
-      const totalClasses = randomInt(80, 100);
-      const rate = Math.random() < 0.08
-        ? randomInt(55, 70) / 100
-        : randomInt(75, 98) / 100;
-      const attendedClasses = Math.round(totalClasses * rate);
-      const attendancePercentage = Number(((attendedClasses / totalClasses) * 100).toFixed(2));
-      return { student: student._id, totalClasses, attendedClasses, attendancePercentage };
-    });
+    // 5. Attendance (per course; ~72% safe, ~20% condonation, ~8% detention overall)
+    console.log('Generating per-course attendance...');
+    const attendanceDocs = [];
+    for (const student of createdStudents) {
+      const band = pickAttendanceBand();
+      attendanceDocs.push(...buildRowsForStudent(student._id, createdCourses, band));
+    }
     await Attendance.insertMany(attendanceDocs);
-    console.log(`  ${attendanceDocs.length} attendance records created.`);
+    console.log(`  ${attendanceDocs.length} attendance rows created (${createdStudents.length} students × ${createdCourses.length} courses).`);
 
     console.log('\n========================================');
     console.log('   SEED COMPLETE');

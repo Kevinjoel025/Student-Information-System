@@ -85,3 +85,142 @@ export async function deleteStudent(id: string) {
   });
   return handleResponse(res);
 }
+
+// ── Courses ─────────────────────────────────────────────────
+export interface Course {
+  _id: string;
+  courseCode: string;
+  courseTitle: string;
+  credits: number;
+}
+
+export async function getCourses(): Promise<Course[]> {
+  const res = await fetch(`${API_BASE}/courses`, { headers: authHeaders() });
+  return handleResponse(res);
+}
+
+// ── Marks / Results (CGPA) ───────────────────────────────────
+export interface CourseRef {
+  _id: string;
+  courseCode: string;
+  courseTitle: string;
+  credits: number;
+}
+
+export interface ResultCourseRow {
+  _id: string;
+  marks: number;
+  gradePoint: number;
+  creditPoints: number;
+  letterGrade?: string;
+  course: CourseRef;
+}
+
+export interface ResultsSummary {
+  tcp: number;
+  tc: number;
+  cgpa: number | null;
+  overallGrade?: string;
+}
+
+export interface MyResultsResponse {
+  courses: ResultCourseRow[];
+  summary: ResultsSummary;
+}
+
+export async function getMyResults(): Promise<MyResultsResponse> {
+  const res = await fetch(`${API_BASE}/marks/my-results`, { headers: authHeaders() });
+  return handleResponse(res);
+}
+
+export interface AdminResultOverviewRow {
+  _id: string;
+  name: string;
+  rollNumber: string;
+  department: string;
+  coursesCount: number;
+  tcp: number;
+  tc: number;
+  cgpa: number | null;
+  overallGrade?: string;
+}
+
+export async function getAdminResultsOverview(): Promise<AdminResultOverviewRow[]> {
+  const res = await fetch(`${API_BASE}/marks/overview`, { headers: authHeaders() });
+  return handleResponse(res);
+}
+
+export interface AdminStudentResultsResponse {
+  student: {
+    _id: string;
+    name: string;
+    rollNumber: string;
+    department: string;
+    email?: string;
+    year?: string;
+  };
+  courses: ResultCourseRow[];
+  summary: ResultsSummary;
+}
+
+export async function getAdminStudentResults(studentId: string): Promise<AdminStudentResultsResponse> {
+  const res = await fetch(`${API_BASE}/marks/admin/student/${studentId}`, { headers: authHeaders() });
+  return handleResponse(res);
+}
+
+export async function updateMarkEntry(marksEntryId: string, marks: number) {
+  const res = await fetch(`${API_BASE}/marks/${marksEntryId}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify({ marks }),
+  });
+  return handleResponse(res);
+}
+
+// ── Attendance ──────────────────────────────────────────────
+export type AttendanceStatusKey = 'safe' | 'condonation' | 'detention';
+
+export interface AttendanceOverall {
+  totalClasses: number;
+  attendedClasses: number;
+  attendancePercentage: number;
+  key: AttendanceStatusKey;
+  label: string;
+  color: string;
+}
+
+export interface AttendanceCourseRow {
+  _id: string;
+  course: CourseRef;
+  totalClasses: number;
+  attendedClasses: number;
+  attendancePercentage: number;
+}
+
+export interface MyAttendanceResponse {
+  overall: AttendanceOverall;
+  courses: AttendanceCourseRow[];
+}
+
+export async function getMyAttendance(): Promise<MyAttendanceResponse> {
+  const res = await fetch(`${API_BASE}/attendance/my`, { headers: authHeaders() });
+  return handleResponse(res);
+}
+
+export interface AdminAttendanceOverviewRow {
+  _id: string;
+  name: string;
+  rollNumber: string;
+  department: string;
+  coursesCount: number;
+  totalClasses: number;
+  attendedClasses: number;
+  attendancePercentage: number;
+  statusKey: string;
+  statusLabel: string;
+}
+
+export async function getAdminAttendanceOverview(): Promise<AdminAttendanceOverviewRow[]> {
+  const res = await fetch(`${API_BASE}/attendance/admin/overview`, { headers: authHeaders() });
+  return handleResponse(res);
+}

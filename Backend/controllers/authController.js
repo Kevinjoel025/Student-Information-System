@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { assignRandomMarksToStudent } = require('../services/marksEnrollment');
+const { assignAttendanceToStudent } = require('../services/attendanceEnrollment');
 
 // Generate JWT Helper
 const generateToken = (id) => {
@@ -25,6 +27,23 @@ exports.register = async (req, res) => {
       name, email, password, role, rollNumber, department, year,
       bloodGroup, parentMobile, studentMobile, residentialAddress
     });
+
+    if (user.role === 'student') {
+      try {
+        await assignRandomMarksToStudent(user._id);
+        await assignAttendanceToStudent(user._id);
+      } catch (e) {
+        const Marks = require('../models/Marks');
+        const Attendance = require('../models/Attendance');
+        await Marks.deleteMany({ student: user._id });
+        await Attendance.deleteMany({ student: user._id });
+        await User.deleteOne({ _id: user._id });
+        return res.status(500).json({
+          message: 'Student created but enrollment failed. Ensure courses exist in the database.',
+          error: e.message,
+        });
+      }
+    }
 
     res.status(201).json({
       _id: user._id,

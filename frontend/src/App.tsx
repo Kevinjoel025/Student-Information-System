@@ -4,7 +4,13 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Login } from './pages/auth/Login';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { StudentManagement } from './pages/admin/StudentManagement';
+import { AdminCourses } from './pages/admin/AdminCourses';
+import { AdminResults } from './pages/admin/AdminResults';
 import { StudentDashboard } from './pages/student/StudentDashboard';
+import { StudentCourses } from './pages/student/StudentCourses';
+import { StudentResults } from './pages/student/StudentResults';
+import { StudentAttendance } from './pages/student/StudentAttendance';
+import { AdminAttendance } from './pages/admin/AdminAttendance';
 
 // Placeholder Pages
 const Placeholder = ({ title }: { title: string }) => (
@@ -23,9 +29,9 @@ function App() {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="students" element={<StudentManagement />} />
-        <Route path="courses" element={<Placeholder title="Course Management" />} />
-        <Route path="marks" element={<Placeholder title="Marks Management" />} />
-        <Route path="attendance" element={<Placeholder title="Attendance Management" />} />
+        <Route path="courses" element={<AdminCourses />} />
+        <Route path="marks" element={<AdminResults />} />
+        <Route path="attendance" element={<AdminAttendance />} />
         <Route path="reports" element={<Placeholder title="Reports" />} />
       </Route>
 
@@ -33,9 +39,9 @@ function App() {
       <Route path="/student" element={<DashboardLayout />}>
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<StudentDashboard />} />
-        <Route path="courses" element={<Placeholder title="My Courses" />} />
-        <Route path="marks" element={<Placeholder title="My Marks" />} />
-        <Route path="attendance" element={<Placeholder title="My Attendance" />} />
+        <Route path="courses" element={<StudentCourses />} />
+        <Route path="results" element={<StudentResults />} />
+        <Route path="attendance" element={<StudentAttendance />} />
         <Route path="profile" element={<Placeholder title="My Profile" />} />
       </Route>
       

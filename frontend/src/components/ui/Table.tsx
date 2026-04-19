@@ -21,8 +21,12 @@ export const Tbody = ({ children }: { children: React.ReactNode }) => (
   </tbody>
 );
 
-export const Tr = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-  <tr className={cn("hover:bg-white/5 transition-colors", className)}>
+export const Tr = ({
+  children,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableRowElement>) => (
+  <tr className={cn('hover:bg-white/5 transition-colors', className)} {...props}>
     {children}
   </tr>
 );
@@ -33,8 +37,18 @@ export const Th = ({ children, className }: { children: React.ReactNode, classNa
   </th>
 );
 
-export const Td = ({ children, className, title }: { children: React.ReactNode, className?: string, title?: string }) => (
-  <td className={cn("px-6 py-4", className)} title={title}>
+export const Td = ({
+  children,
+  className,
+  title,
+  colSpan,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  title?: string;
+  colSpan?: number;
+}) => (
+  <td className={cn('px-6 py-4', className)} title={title} colSpan={colSpan}>
     {children}
   </td>
 );

@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const Marks = require('../models/Marks');
+const Attendance = require('../models/Attendance');
 
 // @desc    Get all students with search & filter
 // @route   GET /api/students
@@ -73,6 +75,8 @@ exports.deleteStudent = async (req, res) => {
     if (!student || student.role !== 'student') {
       return res.status(404).json({ message: 'Student not found' });
     }
+    await Marks.deleteMany({ student: student._id });
+    await Attendance.deleteMany({ student: student._id });
     await User.deleteOne({ _id: student._id });
     res.json({ message: 'Student removed' });
   } catch (error) {
