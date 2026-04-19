@@ -58,7 +58,7 @@ export const Login = () => {
 
         <Card className="p-8">
           <form onSubmit={handleLogin} className="space-y-6">
-            
+
             {/* Role Toggle */}
             <div className="flex p-1 bg-background/50 rounded-lg">
               <button
@@ -98,26 +98,26 @@ export const Login = () => {
                 <label className="block text-sm font-medium text-gray-300 mb-1.5">
                   {selectedRole === 'admin' ? 'Email Address' : 'Roll Number / Email'}
                 </label>
-                <Input 
-                  type="text" 
-                  placeholder={selectedRole === 'admin' ? "admin@sis.edu" : "e.g. 24071A0501"} 
+                <Input
+                  type="text"
+                  placeholder={selectedRole === 'admin' ? "admin@sis.edu" : "e.g. 24071A0501"}
                   icon={<Mail className="w-5 h-5" />}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required 
+                  required
                   disabled={loading}
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1.5">Password</label>
-                <Input 
-                  type="password" 
-                  placeholder="••••••••" 
+                <Input
+                  type="password"
+                  placeholder="••••••••"
                   icon={<Lock className="w-5 h-5" />}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required 
+                  required
                   disabled={loading}
                 />
               </div>
@@ -131,8 +131,8 @@ export const Login = () => {
               <a href="#" className="text-primary-end hover:text-primary-start transition-colors">Forgot password?</a>
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={loading}
               className={cn(
                 "w-full transition-all duration-300",
@@ -148,13 +148,6 @@ export const Login = () => {
                 `Sign in as ${selectedRole === 'admin' ? 'Administrator' : 'Student'}`
               )}
             </Button>
-
-            {/* Demo Credentials */}
-            <div className="text-center text-xs text-gray-500 space-y-1 pt-2 border-t border-white/5">
-              <p className="text-gray-400 font-medium">Demo Credentials</p>
-              <p>Admin: <span className="text-gray-300">admin@sis.edu</span> / <span className="text-gray-300">admin123</span></p>
-              <p>Student: <span className="text-gray-300">24071A0501</span> / <span className="text-gray-300">student123</span></p>
-            </div>
           </form>
         </Card>
       </div>

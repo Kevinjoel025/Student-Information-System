@@ -12,13 +12,6 @@ import { StudentResults } from './pages/student/StudentResults';
 import { StudentAttendance } from './pages/student/StudentAttendance';
 import { AdminAttendance } from './pages/admin/AdminAttendance';
 
-// Placeholder Pages
-const Placeholder = ({ title }: { title: string }) => (
-  <div className="flex items-center justify-center p-12 glass rounded-2xl animate-fade-in w-full h-full min-h-[400px]">
-    <h2 className="text-2xl font-semibold text-gray-300">{title} (Coming Soon)</h2>
-  </div>
-);
-
 function App() {
   return (
     <Routes>
@@ -32,7 +25,6 @@ function App() {
         <Route path="courses" element={<AdminCourses />} />
         <Route path="marks" element={<AdminResults />} />
         <Route path="attendance" element={<AdminAttendance />} />
-        <Route path="reports" element={<Placeholder title="Reports" />} />
       </Route>
 
       {/* Student Routes */}
@@ -42,7 +34,6 @@ function App() {
         <Route path="courses" element={<StudentCourses />} />
         <Route path="results" element={<StudentResults />} />
         <Route path="attendance" element={<StudentAttendance />} />
-        <Route path="profile" element={<Placeholder title="My Profile" />} />
       </Route>
       
       <Route path="*" element={<Navigate to="/" replace />} />

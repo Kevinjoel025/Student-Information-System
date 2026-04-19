@@ -1,12 +1,14 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { Table, Tbody, Tr, Td } from '../../components/ui/Table';
-import { BookOpen, BookCheck, ClipboardList, Loader2 } from 'lucide-react';
+import { BookOpen, BookCheck, ClipboardList, Loader2, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getMyResults, getMyAttendance } from '../../lib/api';
 
 export const StudentDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [courseCount, setCourseCount] = useState(0);
   const [avgMarks, setAvgMarks] = useState<string>('—');
@@ -55,9 +57,9 @@ export const StudentDashboard = () => {
   }, [load]);
 
   const stats = [
-    { label: 'Enrolled courses', value: String(courseCount), icon: BookOpen, color: 'text-blue-400', bg: 'bg-blue-400/20' },
-    { label: 'Average marks', value: avgMarks === '—' ? '—' : `${avgMarks}%`, icon: BookCheck, color: 'text-green-400', bg: 'bg-green-400/20' },
-    { label: 'Attendance', value: attendancePct === '—' ? '—' : `${attendancePct}%`, icon: ClipboardList, color: 'text-purple-400', bg: 'bg-purple-400/20' },
+    { label: 'Enrolled courses', value: String(courseCount), icon: BookOpen, color: 'text-blue-400', bg: 'bg-blue-400/20', hoverBorder: 'hover:border-blue-400/40', path: '/student/courses' },
+    { label: 'Average marks', value: avgMarks === '—' ? '—' : `${avgMarks}%`, icon: BookCheck, color: 'text-green-400', bg: 'bg-green-400/20', hoverBorder: 'hover:border-green-400/40', path: '/student/results' },
+    { label: 'Attendance', value: attendancePct === '—' ? '—' : `${attendancePct}%`, icon: ClipboardList, color: 'text-purple-400', bg: 'bg-purple-400/20', hoverBorder: 'hover:border-purple-400/40', path: '/student/attendance' },
   ];
 
   return (
@@ -66,7 +68,7 @@ export const StudentDashboard = () => {
         <div className="absolute top-0 right-0 w-64 h-64 bg-student-accent/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
         <div className="relative z-10">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}!
+            Welcome back{user?.name ? `, ${user.name}` : ''}!
           </h1>
           <p className="text-gray-300">
             Your CGPA is <span className="text-student-accent font-semibold">{cgpa}</span>. Open{' '}
@@ -83,14 +85,20 @@ export const StudentDashboard = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {stats.map((stat, i) => (
-            <Card key={i} hoverable className="flex items-center gap-4">
-              <div className={`p-4 rounded-xl ${stat.bg}`}>
+            <Card
+              key={i}
+              hoverable
+              className={`flex items-center gap-4 cursor-pointer group transition-all duration-300 border border-white/10 ${stat.hoverBorder}`}
+              onClick={() => navigate(stat.path)}
+            >
+              <div className={`p-4 rounded-xl ${stat.bg} transition-transform duration-300 group-hover:scale-110`}>
                 <stat.icon className={`w-6 h-6 ${stat.color}`} />
               </div>
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-400">{stat.label}</p>
                 <h3 className="text-2xl font-bold text-white mt-1">{stat.value}</h3>
               </div>
+              <ArrowRight className="w-5 h-5 text-gray-500 group-hover:text-white group-hover:translate-x-1 transition-all duration-300" />
             </Card>
           ))}
         </div>

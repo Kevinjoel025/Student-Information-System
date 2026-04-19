@@ -1,5 +1,5 @@
 import { useAuth } from '../../contexts/AuthContext';
-import { Bell, Search, UserCircle } from 'lucide-react';
+import { Search, UserCircle } from 'lucide-react';
 
 export const Navbar = () => {
   const { user, role } = useAuth();
@@ -17,21 +17,12 @@ export const Navbar = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-6">
-        <button className="text-gray-400 hover:text-white transition-colors relative">
-          <Bell className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-card"></span>
-        </button>
-        
-        <div className="h-8 w-px bg-white/10"></div>
-
-        <div className="flex items-center gap-3">
-          <div className="text-right hidden sm:block">
-            <p className="text-sm font-medium text-white">{user?.name || (role === 'admin' ? 'Admin User' : 'Student User')}</p>
-            <p className="text-xs text-gray-400 capitalize">{role}</p>
-          </div>
-          <UserCircle className="w-10 h-10 text-gray-400" />
+      <div className="flex items-center gap-3">
+        <div className="text-right hidden sm:block">
+          <p className="text-sm font-medium text-white">{user?.name || (role === 'admin' ? 'Admin User' : 'Student User')}</p>
+          <p className="text-xs text-gray-400 capitalize">{role}</p>
         </div>
+        <UserCircle className="w-10 h-10 text-gray-400" />
       </div>
     </header>
   );

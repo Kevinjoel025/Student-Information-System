@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
   LayoutDashboard, Users, BookOpen, FileSpreadsheet, 
-  CalendarCheck, FileOutput, User as UserIcon, LogOut
+  CalendarCheck, LogOut
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -17,7 +17,6 @@ export const Sidebar = () => {
     { to: '/admin/courses', icon: BookOpen, label: 'Courses' },
     { to: '/admin/marks', icon: FileSpreadsheet, label: 'Results' },
     { to: '/admin/attendance', icon: CalendarCheck, label: 'Attendance' },
-    { to: '/admin/reports', icon: FileOutput, label: 'Reports' },
   ];
 
   const studentLinks = [
@@ -25,7 +24,6 @@ export const Sidebar = () => {
     { to: '/student/courses', icon: BookOpen, label: 'My Courses' },
     { to: '/student/results', icon: FileSpreadsheet, label: 'Results' },
     { to: '/student/attendance', icon: CalendarCheck, label: 'Attendance' },
-    { to: '/student/profile', icon: UserIcon, label: 'Profile' },
   ];
 
   const links = role === 'admin' ? adminLinks : studentLinks;
